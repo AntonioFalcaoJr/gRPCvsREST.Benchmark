@@ -6,7 +6,16 @@ export const options = {
   duration: '60s',
 }; 
 
+function getHost() {
+  let protocol = !__ENV.HTTPS 
+    ? "https"
+    : "http";
+
+  let host = __ENV.HOST || "localhost:7000";
+  return `${protocol}://${host}`;
+}
+
 export default function () {
-  let res = http.get('https://localhost:7100/rest');
+  let res = http.get(`${getHost()}/rest`);
   check(res, { 'status was 200': (r) => r.status == 200 })
 }
