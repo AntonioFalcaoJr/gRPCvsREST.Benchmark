@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using gRPC.WebApi.gRPC;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services

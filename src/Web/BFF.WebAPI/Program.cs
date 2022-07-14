@@ -1,4 +1,5 @@
 using GRPCvsREST.Benchmark;
+using web.Requests;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
