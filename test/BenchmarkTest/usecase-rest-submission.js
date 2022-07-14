@@ -1,12 +1,12 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
+import { check } from 'k6';
 
 export const options = {
-  vus: 10,
-  duration: '30s',
+  vus: 50,
+  duration: '60s',
 }; 
 
 export default function () {
-  let res = http.get('https://test.k6.io');
+  let res = http.post('https://localhost:7100/rest');
   check(res, { 'status was 200': (r) => r.status == 200 })
 }
