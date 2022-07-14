@@ -1,0 +1,22 @@
+﻿package gRPCvsREST.Benchmark;
+
+service Benchmark {
+  rpc Retrieve(RetrieveRequest) returns (RetrieveResponse);
+  rpc Submit(SubmitRequest) returns (SubmitResponse);
+}
+
+message RetrieveRequest {
+  
+}
+
+message RetrieveResponse {
+  
+}
+
+message SubmitRequest {
+  
+}
+
+message SubmitResponse {
+  
+}
