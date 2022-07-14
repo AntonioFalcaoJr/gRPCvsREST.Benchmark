@@ -7,10 +7,7 @@ export const options = {
 }; 
 
 function getHost() {
-  let protocol = !__ENV.HTTPS 
-    ? "https"
-    : "http";
-
+  let protocol = __ENV.HTTPS ? "https" : "http";
   let host = __ENV.HOST || "localhost:7000";
   return `${protocol}://${host}`;
 }
