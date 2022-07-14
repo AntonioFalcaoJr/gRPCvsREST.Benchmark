@@ -1,6 +1,9 @@
-﻿package gRPCvsREST.Benchmark;
+﻿syntax = "proto3";
 
-service Benchmark {
+package gRPCvsREST.Benchmark;
+
+
+service BenchmarkService {
   rpc Retrieve(RetrieveRequest) returns (RetrieveResponse);
   rpc Submit(SubmitRequest) returns (SubmitResponse);
 }
