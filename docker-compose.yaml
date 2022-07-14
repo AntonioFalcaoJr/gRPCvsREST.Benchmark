@@ -1,0 +1,73 @@
+version: "3.9"
+services:
+  
+  rest:
+    image: rest:latest
+    build:
+      context: .
+      dockerfile: ./src/Services/REST.WebApi/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://*:80
+      ASPNETCORE_ENVIRONMENT: Staging
+    ports:
+      - "80"
+      - "443"
+    networks:
+      - internal
+    deploy:
+      replicas: 4
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 120M
+      restart_policy:
+        condition: any
+        
+  grpc:
+    image: grpc:latest
+    build:
+      context: .
+      dockerfile: ./src/Services/gRPC.WebApi/Dockerfile
+    environment:
+      ASPNETCORE_URLS: https://*:80;http://*:80;
+      ASPNETCORE_ENVIRONMENT: Staging
+    ports:
+      - "80"
+      - "443"
+    networks:
+      - internal
+    deploy:
+      replicas: 4
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 120M
+      restart_policy:
+        condition: any      
+   
+  webapi:
+    image: webapi:latest
+    build:
+      context: .
+      dockerfile: ./src/Web/WebAPI/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://*:5000
+      ASPNETCORE_ENVIRONMENT: Staging
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    networks:
+      - internal
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 250M
+      restart_policy:
+        condition: any
+  
+networks:
+  internal:
+    name: internal
+    driver: bridge
