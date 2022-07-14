@@ -1,18 +1,35 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+﻿ARG ASPNET_VERSION="7.0.0-preview.5-alpine3.16"
+ARG SDK_VERSION="7.0.100-preview.5-1-alpine3.16"
+ARG BASE_ADRESS="mcr.microsoft.com/dotnet"
+
+FROM $BASE_ADRESS/aspnet:$ASPNET_VERSION AS base
 WORKDIR /app
+
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM $BASE_ADRESS/sdk:$SDK_VERSION AS build
+
+COPY ./global.json ./
+COPY ./nuget.config ./
+COPY ./Directory.Build.props ./
+
 WORKDIR /src
-COPY ["src/gRPC.WebApi/gRPC.WebApi.csproj", "gRPC.WebApi/"]
-RUN dotnet restore "src/gRPC.WebApi/gRPC.WebApi.csproj"
-COPY . .
-WORKDIR "/src/gRPC.WebApi"
-RUN dotnet build "gRPC.WebApi.csproj" -c Release -o /app/build
+
+COPY ./src/Services/gRPC.WebApi/*.csproj ./Services/gRPC.WebApi/
+COPY ./src/Contracts/*.csproj ./Contracts/
+
+RUN dotnet restore -v m ./Services/gRPC.WebApi/
+
+COPY ./src/Services/gRPC.WebApi/. ./Services/gRPC.WebApi/
+COPY ./src/Contracts/. ./Contracts/
+
+WORKDIR /src/Services/gRPC.WebApi
+
+RUN dotnet build -c Release --no-restore -v m -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "gRPC.WebApi.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release --no-restore -v m -o /app/publish
 
 FROM base AS final
 WORKDIR /app

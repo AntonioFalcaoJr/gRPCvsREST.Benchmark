@@ -5,8 +5,8 @@ ARG BASE_ADRESS="mcr.microsoft.com/dotnet"
 FROM $BASE_ADRESS/aspnet:$ASPNET_VERSION AS base
 WORKDIR /app
 
-RUN apk add --no-cache icu-libs
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+EXPOSE 80
+EXPOSE 443
 
 FROM $BASE_ADRESS/sdk:$SDK_VERSION AS build
 
