@@ -12,9 +12,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/grpc", ([AsParameters] GrpcBffRequest request) 
-    => request.Client.RetrieveAsync(new RetrieveRequest()).ResponseAsync);
-app.MapPost("/grpc", () => { });
+app.MapGet("/grpc", ([AsParameters] GrpcRetrieveRequest request) => request.Client.RetrieveAsync(new RetrieveRequest()).ResponseAsync);
+app.MapPost("/grpc", ([AsParameters] GrpcSubmitRequest request) => request.Client.SubmitAsync(new SubmitRequest()).ResponseAsync);
 
 app.MapGet("/rest", () => { });
 app.MapPost("/rest", () => { });
