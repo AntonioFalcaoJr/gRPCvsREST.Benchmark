@@ -3,7 +3,7 @@ using GRPCvsREST.Benchmark;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options => options.Address = new Uri("https://localhost:7110"));
+builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options => options.Address = new Uri(builder.Configuration["Benchmark:GrpcHost"]));
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
