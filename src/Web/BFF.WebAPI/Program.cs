@@ -9,11 +9,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/grpc/retrieve", () => { });
-app.MapPost("/grpc/submit", () => { });
+app.MapGet("/grpc", () => { });
+app.MapPost("/grpc", () => { });
 
-app.MapGet("/rest/retrieve", () => { });
-app.MapPost("/rest/submit", () => { });
+app.MapGet("/rest", () => { });
+app.MapPost("/rest", () => { });
 
 app.UseHttpsRedirection();
 await app.RunAsync();
