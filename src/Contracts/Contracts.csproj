@@ -10,4 +10,8 @@
       <PackageReference Include="Grpc.AspNetCore" Version="2.47.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Protobuf Include="Protos\Benchmark.proto" GrpcServices="Both" />
+    </ItemGroup>
+    
 </Project>
