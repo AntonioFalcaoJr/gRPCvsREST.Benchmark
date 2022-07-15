@@ -1,7 +1,7 @@
 ﻿using GRPCvsREST.Benchmark;
 using Microsoft.AspNetCore.Mvc;
 
-namespace web.Requests;
+namespace BFF.WebAPI.Requests;
 
 public class GrpcRetrieveRequest
 {

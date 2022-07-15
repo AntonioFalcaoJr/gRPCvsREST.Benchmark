@@ -1,5 +1,5 @@
+using BFF.WebAPI.Requests;
 using GRPCvsREST.Benchmark;
-using web.Requests;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();

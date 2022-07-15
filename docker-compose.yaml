@@ -22,7 +22,7 @@ services:
           memory: 120M
       restart_policy:
         condition: any
-        
+  
   grpc:
     image: grpc:latest
     build:
@@ -43,8 +43,8 @@ services:
           cpus: '0.25'
           memory: 120M
       restart_policy:
-        condition: any      
-   
+        condition: any
+  
   webapi:
     image: webapi:latest
     build:
@@ -66,7 +66,7 @@ services:
           memory: 250M
       restart_policy:
         condition: any
-  
+
 networks:
   internal:
     name: internal
