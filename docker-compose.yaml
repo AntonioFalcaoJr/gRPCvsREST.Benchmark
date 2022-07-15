@@ -51,7 +51,7 @@ services:
       context: .
       dockerfile: ./src/Web/BFF.WebAPI/Dockerfile
     environment:
-      ASPNETCORE_URLS: https://*:5001:http://*:5000
+      ASPNETCORE_URLS: https://*:5001;http://*:5000
       ASPNETCORE_ENVIRONMENT: Staging
     ports:
       - "5000:5000"
@@ -59,7 +59,6 @@ services:
     networks:
       - internal
     deploy:
-      replicas: 1
       resources:
         limits:
           cpus: '1.0'

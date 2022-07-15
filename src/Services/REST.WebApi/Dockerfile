@@ -27,9 +27,11 @@ WORKDIR /src/Services/REST.WebApi
 RUN dotnet build -c Release --no-restore -v m -o /app/build 
 
 FROM build AS publish
+RUN dotnet dev-certs https --trust
 RUN dotnet publish -c Release --no-restore -v m -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=publish /root/.dotnet/corefx/cryptography/x509stores/my/* /root/.dotnet/corefx/cryptography/x509stores/my/
 ENTRYPOINT ["dotnet", "REST.WebApi.dll"]

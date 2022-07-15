@@ -7,7 +7,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options => options.Address = new Uri(builder.Configuration["Benchmark:GrpcHost"]));
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging() )
 {
     app.UseSwagger();
     app.UseSwaggerUI();
