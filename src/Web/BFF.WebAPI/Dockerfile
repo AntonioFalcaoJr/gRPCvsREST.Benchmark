@@ -1,5 +1,5 @@
-﻿ARG ASPNET_VERSION="7.0.0-preview.4-alpine3.15"
-ARG SDK_VERSION="7.0.100-preview.4-alpine3.15"
+﻿ARG ASPNET_VERSION="7.0.0-preview.6-alpine3.16"
+ARG SDK_VERSION="7.0.100-preview.6-alpine3.16"
 ARG BASE_ADRESS="mcr.microsoft.com/dotnet"
 
 FROM $BASE_ADRESS/aspnet:$ASPNET_VERSION AS base
@@ -7,9 +7,6 @@ WORKDIR /app
 
 EXPOSE 80
 EXPOSE 443
-
-RUN apk add --no-cache icu-libs
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 FROM $BASE_ADRESS/sdk:$SDK_VERSION AS build
 
@@ -22,7 +19,7 @@ WORKDIR /src
 COPY ./src/Web/BFF.WebAPI/*.csproj ./Web/BFF.WebAPI/
 COPY ./src/Contracts/*.csproj ./Contracts/
 
-RUN dotnet restore -v m ./Web/WebAPI
+RUN dotnet restore -v m ./Web/BFF.WebAPI
 
 COPY ./src/Web/BFF.WebAPI/. ./Web/BFF.WebAPI/
 COPY ./src/Contracts/. ./Contracts/

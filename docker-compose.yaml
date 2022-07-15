@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./src/Services/REST.WebApi/Dockerfile
     environment:
-      ASPNETCORE_URLS: http://*:80
+      ASPNETCORE_URLS: https://*:443;http://*:80;
       ASPNETCORE_ENVIRONMENT: Staging
     ports:
       - "80"
@@ -29,7 +29,7 @@ services:
       context: .
       dockerfile: ./src/Services/gRPC.WebApi/Dockerfile
     environment:
-      ASPNETCORE_URLS: https://*:80;http://*:80;
+      ASPNETCORE_URLS: https://*:443;http://*:80;
       ASPNETCORE_ENVIRONMENT: Staging
     ports:
       - "80"
@@ -49,9 +49,9 @@ services:
     image: webapi:latest
     build:
       context: .
-      dockerfile: ./src/Web/WebAPI/Dockerfile
+      dockerfile: ./src/Web/BFF.WebAPI/Dockerfile
     environment:
-      ASPNETCORE_URLS: http://*:5000
+      ASPNETCORE_URLS: https://*:5001:http://*:5000
       ASPNETCORE_ENVIRONMENT: Staging
     ports:
       - "5000:5000"
