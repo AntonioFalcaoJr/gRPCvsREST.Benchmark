@@ -1,4 +1,5 @@
 using BFF.WebAPI;
+using Grpc.Net.Client;
 using BFF.WebAPI.HttpClients;
 using GRPCvsREST.Benchmark;
 using Microsoft.AspNetCore.HttpLogging;
@@ -24,8 +25,10 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen();
 
-builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(client
-    => client.Address = new(builder.Configuration["Benchmark:GrpcClient"]!));
+
+builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
+    new GrpcChannelOptions { HttpHandler = new SocketsHttpHandler { EnableMultipleHttp2Connections = true } }));
+builder.Services.AddTransient(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
 
 builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client
     => client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!));
