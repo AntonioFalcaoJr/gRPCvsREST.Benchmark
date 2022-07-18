@@ -36,21 +36,21 @@ builder.Services
 //     .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { EnableMultipleHttp2Connections = true });
 
 // SETUP - 310k request/min (1BFF = 1Server)
-// builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
-//     new GrpcChannelOptions
-//     {
-//         HttpHandler = new SocketsHttpHandler
-//         {
-//             EnableMultipleHttp2Connections = true,
-//             PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
-//             PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
-//             
-//             KeepAlivePingDelay = TimeSpan.FromSeconds(30),
-//             KeepAlivePingTimeout = TimeSpan.FromSeconds(10)
-//         }
-//     }));
-//
-// builder.Services.AddScoped(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
+builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
+    new GrpcChannelOptions
+    {
+        HttpHandler = new SocketsHttpHandler
+        {
+            EnableMultipleHttp2Connections = true,
+            PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
+            PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
+            
+            KeepAlivePingDelay = TimeSpan.FromSeconds(30),
+            KeepAlivePingTimeout = TimeSpan.FromSeconds(10)
+        }
+    }));
+
+builder.Services.AddScoped(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
 
 // 298
 // builder.Services.AddGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>();
