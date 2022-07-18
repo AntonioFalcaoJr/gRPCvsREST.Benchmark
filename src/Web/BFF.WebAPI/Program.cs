@@ -22,18 +22,36 @@ builder.Services.AddHttpLogging(options
     => options.LoggingFields = HttpLoggingFields.All);
 
 builder.Services
-    .AddEndpointsApiExplorer()  
+    .AddEndpointsApiExplorer()
     .AddSwaggerGen();
 
-
-// SETUP - 273k request/minuto (1BFF = 1Server)
+// SETUP - 273k request/min (1BFF = 1Server)
 // builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
-//     new GrpcChannelOptions { HttpHandler = new SocketsHttpHandler { EnableMultipleHttp2Connections = true } }));
+//     new GrpcChannelOptions {HttpHandler = new SocketsHttpHandler {EnableMultipleHttp2Connections = true}}));
 // builder.Services.AddTransient(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
 
-builder.Services
-    .AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(c => c.Address = new Uri(builder.Configuration["Benchmark:GrpcClient"]!))
-    .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { EnableMultipleHttp2Connections = true });
+// 200k
+// builder.Services
+//     .AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(c => c.Address = new Uri(builder.Configuration["Benchmark:GrpcClient"]!))
+//     .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { EnableMultipleHttp2Connections = true });
+
+// SETUP - 310k request/min (1BFF = 1Server)
+// builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
+//     new GrpcChannelOptions
+//     {
+//         HttpHandler = new SocketsHttpHandler
+//         {
+//             EnableMultipleHttp2Connections = true,
+//             PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
+//             PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
+//             
+//             KeepAlivePingDelay = TimeSpan.FromSeconds(30),
+//             KeepAlivePingTimeout = TimeSpan.FromSeconds(10)
+//         }
+//     }));
+//
+// builder.Services.AddScoped(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
+
 
 builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client =>
         client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!))
