@@ -22,13 +22,18 @@ builder.Services.AddHttpLogging(options
     => options.LoggingFields = HttpLoggingFields.All);
 
 builder.Services
-    .AddEndpointsApiExplorer()
+    .AddEndpointsApiExplorer()  
     .AddSwaggerGen();
 
 
-builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
-    new GrpcChannelOptions { HttpHandler = new SocketsHttpHandler { EnableMultipleHttp2Connections = true } }));
-builder.Services.AddTransient(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
+// SETUP - 273k request/minuto (1BFF = 1Server)
+// builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
+//     new GrpcChannelOptions { HttpHandler = new SocketsHttpHandler { EnableMultipleHttp2Connections = true } }));
+// builder.Services.AddTransient(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
+
+builder.Services
+    .AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(c => c.Address = new Uri(builder.Configuration["Benchmark:GrpcClient"]!))
+    .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { EnableMultipleHttp2Connections = true });
 
 builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client =>
         client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!))
