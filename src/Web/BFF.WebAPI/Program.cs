@@ -23,8 +23,11 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen();
 
-builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options
-    => options.Address = new(builder.Configuration["Benchmark:GrpcHost"] ?? string.Empty));
+builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(client
+    => client.Address = new(builder.Configuration["Benchmark:GrpcClient"]!));
+
+builder.Services.AddHttpClient("rest", client
+    => client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!));
 
 var app = builder.Build();
 
@@ -43,10 +46,13 @@ app.MapGet("/grpc", ([AsParameters] Requests.GrpcRetrieveRequest request)
 app.MapPost("/grpc", ([AsParameters] Requests.GrpcSubmitRequest request)
     => request.Client.SubmitAsync(new()).ResponseAsync);
 
-app.MapGet("/rest", () => { });
-app.MapPost("/rest", () => { });
+app.MapGet("/rest", ([AsParameters] Requests.RestRetrieveRequest request)
+    => request.Factory.CreateClient("rest").GetFromJsonAsync<object>("/submit"));
 
-app.UseHttpsRedirection();
+app.MapPost("/rest", ([AsParameters] Requests.RestSubmitRequest request)
+    => request.Factory.CreateClient("rest").PostAsJsonAsync("/retrieve", new { }));
+
+// app.UseHttpsRedirection();
 
 try
 {

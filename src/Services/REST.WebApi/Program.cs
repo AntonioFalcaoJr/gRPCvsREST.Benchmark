@@ -32,7 +32,7 @@ if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
     app.UseSwaggerUI(options => options.EnableTryItOutByDefault());
 }
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/retrieve", () => "Hello World!");
 
 try
 {
