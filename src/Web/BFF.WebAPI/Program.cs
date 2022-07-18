@@ -1,4 +1,5 @@
 using BFF.WebAPI;
+using BFF.WebAPI.HttpClients;
 using GRPCvsREST.Benchmark;
 using Microsoft.AspNetCore.HttpLogging;
 using Serilog;
@@ -26,7 +27,7 @@ builder.Services
 builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(client
     => client.Address = new(builder.Configuration["Benchmark:GrpcClient"]!));
 
-builder.Services.AddHttpClient("rest", client
+builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client
     => client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!));
 
 var app = builder.Build();
@@ -46,20 +47,11 @@ app.MapGet("/grpc", ([AsParameters] Requests.GrpcRetrieveRequest request)
 app.MapPost("/grpc", ([AsParameters] Requests.GrpcSubmitRequest request)
     => request.Client.SubmitAsync(new()).ResponseAsync);
 
-app.MapGet("/rest", async ([AsParameters] Requests.RestRetrieveRequest request) =>
-{
-    var client = request.Factory.CreateClient("rest");
-    var response = await client.GetAsync("/retrieve");
-
-    return response.IsSuccessStatusCode
-        ? Results.Ok()
-        : Results.BadRequest();
-});
+app.MapGet("/rest", ([AsParameters] Requests.RestRetrieveRequest request)
+    => request.Client.RetrieveAsync());
 
 app.MapPost("/rest", ([AsParameters] Requests.RestSubmitRequest request)
-    => request.Factory.CreateClient("rest").PostAsJsonAsync("/submit", new { }));
-
-// app.UseHttpsRedirection();
+    => request.Client.SubmitAsync());
 
 try
 {

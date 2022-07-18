@@ -15,11 +15,10 @@ services:
     networks:
       - internal
     deploy:
-      replicas: 4
       resources:
         limits:
-          cpus: '0.25'
-          memory: 120M
+          cpus: '1.0'
+          memory: 256M
       restart_policy:
         condition: any
   
@@ -37,11 +36,10 @@ services:
     networks:
       - internal
     deploy:
-      replicas: 4
       resources:
         limits:
-          cpus: '0.25'
-          memory: 120M
+          cpus: '1.0'
+          memory: 256M
       restart_policy:
         condition: any
   
@@ -54,15 +52,16 @@ services:
       ASPNETCORE_URLS: https://*:443;http://*:80
       ASPNETCORE_ENVIRONMENT: Staging
     ports:
-      - "5000:80"
-      - "5001:443"
+      - "80"
+      - "443"
     networks:
       - internal
     deploy:
+      replicas: 4
       resources:
         limits:
           cpus: '1.0'
-          memory: 250M
+          memory: 380M
       restart_policy:
         condition: any
 
