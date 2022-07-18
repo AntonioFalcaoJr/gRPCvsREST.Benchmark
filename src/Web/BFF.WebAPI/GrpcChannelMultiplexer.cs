@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
         where T : ClientBase<T>
     {
         services
-            .AddTransient<T>(p =>
+            .AddScoped<T>(p =>
             {
                 var multiplexer = p.GetRequiredService<GrpcChannelMultiplexer>();
                 var channel = multiplexer.Get<T>();
