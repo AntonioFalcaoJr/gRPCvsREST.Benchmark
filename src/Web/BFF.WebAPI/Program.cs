@@ -30,8 +30,9 @@ builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benc
     new GrpcChannelOptions { HttpHandler = new SocketsHttpHandler { EnableMultipleHttp2Connections = true } }));
 builder.Services.AddTransient(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
 
-builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client
-    => client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!));
+builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client =>
+        client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!))
+    .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
 var app = builder.Build();
 

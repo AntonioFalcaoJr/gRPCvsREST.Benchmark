@@ -57,7 +57,7 @@ services:
     networks:
       - internal
     deploy:
-      replicas: 4
+#      replicas: 4
       resources:
         limits:
           cpus: '1.0'
