@@ -30,7 +30,7 @@ builder.Services
 //     new GrpcChannelOptions {HttpHandler = new SocketsHttpHandler {EnableMultipleHttp2Connections = true}}));
 // builder.Services.AddTransient(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
 
-// 200k
+// SETUP - 200k request/min (1BFF = 1Server)
 // builder.Services
 //     .AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(c => c.Address = new Uri(builder.Configuration["Benchmark:GrpcClient"]!))
 //     .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { EnableMultipleHttp2Connections = true });
@@ -52,7 +52,7 @@ builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benc
 
 builder.Services.AddScoped(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
 
-// 298
+// SETUP - 298k request/min (1BFF = 1Server)
 // builder.Services.AddGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>();
 
 builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client =>
