@@ -46,11 +46,18 @@ app.MapGet("/grpc", ([AsParameters] Requests.GrpcRetrieveRequest request)
 app.MapPost("/grpc", ([AsParameters] Requests.GrpcSubmitRequest request)
     => request.Client.SubmitAsync(new()).ResponseAsync);
 
-app.MapGet("/rest", ([AsParameters] Requests.RestRetrieveRequest request)
-    => request.Factory.CreateClient("rest").GetFromJsonAsync<object>("/submit"));
+app.MapGet("/rest", async ([AsParameters] Requests.RestRetrieveRequest request) =>
+{
+    var client = request.Factory.CreateClient("rest");
+    var response = await client.GetAsync("/retrieve");
+
+    return response.IsSuccessStatusCode
+        ? Results.Ok()
+        : Results.BadRequest();
+});
 
 app.MapPost("/rest", ([AsParameters] Requests.RestSubmitRequest request)
-    => request.Factory.CreateClient("rest").PostAsJsonAsync("/retrieve", new { }));
+    => request.Factory.CreateClient("rest").PostAsJsonAsync("/submit", new { }));
 
 // app.UseHttpsRedirection();
 
