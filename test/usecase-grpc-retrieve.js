@@ -13,6 +13,6 @@ function getHost() {
 }
 
 export default function () {
-  let res = http.post(`${getHost()}/rest`);
-  check(res, { 'status was 200': (r) => r.status == 200 })
+  let res = http.get(`${getHost()}/grpc`);
+  check(res, { 'status was 200': (r) => r.status === 200 })
 }

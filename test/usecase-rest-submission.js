@@ -4,7 +4,7 @@ import { check } from 'k6';
 export const options = {
   vus: 50,
   duration: '60s',
-}; 
+};
 
 function getHost() {
   let protocol = __ENV.HTTPS ? "https" : "http";
@@ -13,6 +13,6 @@ function getHost() {
 }
 
 export default function () {
-  let res = http.get(`${getHost()}/rest`);
-  check(res, { 'status was 200': (r) => r.status == 200 })
+  let res = http.post(`${getHost()}/rest`);
+  check(res, { 'status was 200': (r) => r.status === 200 })
 }
