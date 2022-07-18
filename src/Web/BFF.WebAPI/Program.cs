@@ -1,6 +1,6 @@
 using BFF.WebAPI;
-using Grpc.Net.Client;
 using BFF.WebAPI.HttpClients;
+using Grpc.Net.Client;
 using GRPCvsREST.Benchmark;
 using Microsoft.AspNetCore.HttpLogging;
 using Serilog;
@@ -52,6 +52,8 @@ builder.Services
 //
 // builder.Services.AddScoped(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
 
+// 298
+// builder.Services.AddGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>();
 
 builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client =>
         client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!))
@@ -82,6 +84,8 @@ app.MapPost("/rest", ([AsParameters] Requests.RestSubmitRequest request)
 
 try
 {
+    //app.UseGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>(builder.Configuration["Benchmark:GrpcClient"]!);
+    
     await app.RunAsync();
     Log.Information("Stopped cleanly");
 }

@@ -32,7 +32,10 @@ if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
     app.UseSwaggerUI(options => options.EnableTryItOutByDefault());
 }
 
-app.MapGet("/retrieve", () => "Hello World!");
+app.MapGet("/retrieve", () => Results.Ok());
+//app.MapGet("/retrieve", () => Results.Ok()); 1
+//app.MapGet("/retrieve", () => Results.Ok()); 100
+//app.MapGet("/retrieve", () => Results.Ok()); 1000
 
 try
 {
