@@ -1,7 +1,7 @@
 using BFF.WebAPI;
-using Grpc.Net.Client;
 using GRPCvsREST.Benchmark;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,9 +30,12 @@ builder.Services
 //     new GrpcChannelOptions { HttpHandler = new SocketsHttpHandler { EnableMultipleHttp2Connections = true } }));
 // builder.Services.AddTransient(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
 
-builder.Services
-    .AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(c => c.Address = new Uri(builder.Configuration["Benchmark:GrpcClient"]!))
-    .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { EnableMultipleHttp2Connections = true });
+// SETUP - 200k request/minuto (1BFF = 1Server)
+// builder.Services
+//     .AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(c => c.Address = new Uri(builder.Configuration["Benchmark:GrpcClient"]!))
+//     .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { EnableMultipleHttp2Connections = true });
+
+builder.Services.AddGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>();
 
 builder.Services.AddHttpClient("rest", client
     => client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!));
@@ -71,6 +74,8 @@ app.MapPost("/rest", ([AsParameters] Requests.RestSubmitRequest request)
 
 try
 {
+    app.UseGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>(builder.Configuration["Benchmark:GrpcClient"]!);
+    
     await app.RunAsync();
     Log.Information("Stopped cleanly");
 }
