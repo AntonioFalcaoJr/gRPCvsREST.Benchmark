@@ -13,6 +13,6 @@ function getHost() {
 }
 
 export default function () {
-  let res = http.get(`${getHost()}/grpc`);
+  let res = http.get(`http://webapi/grpc`);
   check(res, { 'status was 200': (r) => r.status === 200 })
 }
