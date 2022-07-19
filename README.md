@@ -2,13 +2,21 @@
 
 This Benchmark aims to measure the efficiency of communication between services through REST versus gRPC. The specific scenario is a BFF that consumes data in a given service.
 
-## Run the benchmark
+## Running
+
+The respective [./docker-compose.yaml](./docker-compose.yaml) will provision all system dependencies, with the minimal resources needed for the benchmark:
+
+```bash
+docker-compose up -d
+```
+
+### Run the benchmark
 
 ```bash
 cd ./test
 ```
 
-### REST
+#### REST
 
 ```bash
 docker run --network=internal --name k6 --rm -i grafana/k6 run - <usecase-rest-retrieve.js
@@ -18,7 +26,7 @@ docker run --network=internal --name k6 --rm -i grafana/k6 run - <usecase-rest-r
 docker run --network=internal --name k6 --rm -i grafana/k6 run - <usecase-rest-submission.js
 ```
 
-### gRPC
+#### gRPC
 
 ```bash
 docker run --network=internal --name k6 --rm -i grafana/k6 run - <usecase-rest-retrieve.js
