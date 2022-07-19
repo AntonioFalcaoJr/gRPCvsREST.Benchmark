@@ -2,24 +2,53 @@
 
 package gRPCvsREST.Benchmark;
 
-
 service BenchmarkService {
+  rpc Health(HealthRequest) returns (HealthResponse);
   rpc Retrieve(RetrieveRequest) returns (RetrieveResponse);
   rpc Submit(SubmitRequest) returns (SubmitResponse);
 }
 
+message HealthRequest {
+
+}
+
+message HealthResponse {
+
+}
+
 message RetrieveRequest {
-  
+  int32 Amount = 1;
 }
 
 message RetrieveResponse {
-  
+  repeated Product Products = 1;
 }
 
 message SubmitRequest {
-  
+
 }
 
 message SubmitResponse {
-  
+
+}
+
+message Product{
+  string Id = 1;
+  string Name = 2;
+  string Price = 3;
+  int32 Stock = 4;
+  repeated string Tags = 5;
+  Category Category = 6;
+  Vendor Vendor = 7;
+  string Status = 8;
+}
+
+message Category {
+  string Id = 1;
+  string Name = 2;
+}
+
+message Vendor {
+  string Id = 1;
+  string Name = 2;
 }

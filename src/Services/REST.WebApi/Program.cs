@@ -1,4 +1,6 @@
+using Data.Repositories;
 using Microsoft.AspNetCore.HttpLogging;
+using REST.WebApi;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,8 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen();
 
+builder.Services.AddSingleton<IFakeRepository, FakeRepository>();
+
 var app = builder.Build();
 
 if (builder.Environment.IsDevelopment())
@@ -32,10 +36,10 @@ if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
     app.UseSwaggerUI(options => options.EnableTryItOutByDefault());
 }
 
-app.MapGet("/retrieve", () => Results.Ok());
-//app.MapGet("/retrieve", () => Results.Ok()); 1
-//app.MapGet("/retrieve", () => Results.Ok()); 100
-//app.MapGet("/retrieve", () => Results.Ok()); 1000
+app.MapGet("/health", () => Results.Ok());
+
+app.MapGet("/retrieve", ([AsParameters] Requests.TakeProductsRequest request) 
+    => Results.Ok(request.Repository.TakeProducts(request.Amount)));
 
 try
 {

@@ -23,7 +23,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{397647F7-A
 		test\usecase-grpc-submission.js = test\usecase-grpc-submission.js
 		test\usecase-rest-retrieve.js = test\usecase-rest-retrieve.js
 		test\usecase-rest-submission.js = test\usecase-rest-submission.js
+		test\usecase-grpc-health.js = test\usecase-grpc-health.js
+		test\usecase-rest-health.js = test\usecase-rest-health.js
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "src\Services\Data\Data.csproj", "{74DBB827-CC3F-49D0-8D1B-51F70A60505B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +54,10 @@ Global
 		{1A275D03-2905-4D7C-8C45-403ED34F3ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A275D03-2905-4D7C-8C45-403ED34F3ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A275D03-2905-4D7C-8C45-403ED34F3ED1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74DBB827-CC3F-49D0-8D1B-51F70A60505B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74DBB827-CC3F-49D0-8D1B-51F70A60505B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74DBB827-CC3F-49D0-8D1B-51F70A60505B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74DBB827-CC3F-49D0-8D1B-51F70A60505B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{81BDE840-0BC4-4219-A1A3-C88C8C39E474} = {F7C7ED30-F86D-4B4B-94E2-D11DB3BA5676}
@@ -58,5 +66,6 @@ Global
 		{B83227FB-2A3F-45EF-AFA7-1635F42A39BA} = {FB29F5DA-06F1-4BEE-AD3C-B31F6404CE1F}
 		{A4F98034-7A5E-4268-996A-86CCFB06C544} = {FB29F5DA-06F1-4BEE-AD3C-B31F6404CE1F}
 		{1A275D03-2905-4D7C-8C45-403ED34F3ED1} = {F7C7ED30-F86D-4B4B-94E2-D11DB3BA5676}
+		{74DBB827-CC3F-49D0-8D1B-51F70A60505B} = {FB29F5DA-06F1-4BEE-AD3C-B31F6404CE1F}
 	EndGlobalSection
 EndGlobal

@@ -23,7 +23,7 @@ builder.Services.AddHttpLogging(options
 
 builder.Services
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen();
+    .AddSwaggerGen(options => options.CustomSchemaIds(type => type.FullName));
 
 // SETUP - 273k request/min (1BFF = 1Server)
 // builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
@@ -44,7 +44,7 @@ builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benc
             EnableMultipleHttp2Connections = true,
             PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
             PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
-            
+
             KeepAlivePingDelay = TimeSpan.FromSeconds(30),
             KeepAlivePingTimeout = TimeSpan.FromSeconds(10)
         }
@@ -70,14 +70,20 @@ if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
     app.UseSwaggerUI(options => options.EnableTryItOutByDefault());
 }
 
+app.MapGet("/grpc/health", ([AsParameters] Requests.GrpcHealthRequest request)
+    => request.Client.HealthAsync(new()).ResponseAsync);
+
 app.MapGet("/grpc", ([AsParameters] Requests.GrpcRetrieveRequest request)
-    => request.Client.RetrieveAsync(new()).ResponseAsync);
+    => request.Client.RetrieveAsync(new() {Amount = request.Amount}).ResponseAsync);
 
 app.MapPost("/grpc", ([AsParameters] Requests.GrpcSubmitRequest request)
     => request.Client.SubmitAsync(new()).ResponseAsync);
 
+app.MapGet("/rest/health", ([AsParameters] Requests.RestHealthRequest request)
+    => request.Client.HealthAsync());
+
 app.MapGet("/rest", ([AsParameters] Requests.RestRetrieveRequest request)
-    => request.Client.RetrieveAsync());
+    => request.Client.RetrieveAsync(request.Amount));
 
 app.MapPost("/rest", ([AsParameters] Requests.RestSubmitRequest request)
     => request.Client.SubmitAsync());
@@ -85,7 +91,7 @@ app.MapPost("/rest", ([AsParameters] Requests.RestSubmitRequest request)
 try
 {
     //app.UseGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>(builder.Configuration["Benchmark:GrpcClient"]!);
-    
+
     await app.RunAsync();
     Log.Information("Stopped cleanly");
 }

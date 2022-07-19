@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.47.0"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.47.0" />
     </ItemGroup>
     <ItemGroup>
-        <Protobuf Include="Protos\Benchmark.proto" GrpcServices="Both"/>
+        <Protobuf Include="Protos\Benchmark.proto" GrpcServices="Both" />
     </ItemGroup>
 </Project>

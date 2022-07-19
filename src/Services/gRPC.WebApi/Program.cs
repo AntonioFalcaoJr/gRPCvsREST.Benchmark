@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using Data.Repositories;
 using gRPC.WebApi.gRPC;
 using Microsoft.AspNetCore.HttpLogging;
 using Serilog;
@@ -25,6 +26,8 @@ builder.Services
 
 builder.Services.AddGrpc(options 
     => options.ResponseCompressionLevel = CompressionLevel.Fastest);
+
+builder.Services.AddSingleton<IFakeRepository, FakeRepository>();
 
 var app = builder.Build();
 

@@ -17,11 +17,13 @@ COPY ./Directory.Build.props ./
 WORKDIR /src
 
 COPY ./src/Services/gRPC.WebApi/*.csproj ./Services/gRPC.WebApi/
+COPY ./src/Services/Data/*.csproj ./Services/Data/
 COPY ./src/Contracts/*.csproj ./Contracts/
 
 RUN dotnet restore -v m ./Services/gRPC.WebApi/
 
 COPY ./src/Services/gRPC.WebApi/. ./Services/gRPC.WebApi/
+COPY ./src/Services/Data/. ./Services/Data/
 COPY ./src/Contracts/. ./Contracts/
 
 WORKDIR /src/Services/gRPC.WebApi

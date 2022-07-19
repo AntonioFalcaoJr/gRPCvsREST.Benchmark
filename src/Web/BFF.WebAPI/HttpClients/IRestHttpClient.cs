@@ -1,7 +1,10 @@
-﻿namespace BFF.WebAPI.HttpClients;
+﻿using Contracts.Models;
+
+namespace BFF.WebAPI.HttpClients;
 
 public interface IRestHttpClient
 {
-    Task<HttpResponseMessage> RetrieveAsync();
+    Task HealthAsync();
+    Task<IEnumerable<Product>> RetrieveAsync(int amount);
     Task SubmitAsync();
 }

@@ -17,10 +17,14 @@ COPY ./Directory.Build.props ./
 WORKDIR /src
 
 COPY ./src/Services/REST.WebApi/*.csproj ./Services/REST.WebApi/
+COPY ./src/Services/Data/*.csproj ./Services/Data/
+COPY ./src/Contracts/*.csproj ./Contracts/
 
 RUN dotnet restore -v m ./Services/REST.WebApi/
 
 COPY ./src/Services/REST.WebApi/. ./Services/REST.WebApi/
+COPY ./src/Services/Data/. ./Services/Data/
+COPY ./src/Contracts/. ./Contracts/
 
 WORKDIR /src/Services/REST.WebApi
 
