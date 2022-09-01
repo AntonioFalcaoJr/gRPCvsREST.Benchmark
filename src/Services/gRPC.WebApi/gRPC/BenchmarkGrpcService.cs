@@ -1,8 +1,6 @@
 ﻿using Data.Repositories;
-using Google.Protobuf.Collections;
 using Grpc.Core;
 using GRPCvsREST.Benchmark;
-using Product = Contracts.Models.Product;
 
 namespace gRPC.WebApi.gRPC;
 
@@ -15,9 +13,10 @@ public class BenchmarkGrpcService : BenchmarkService.BenchmarkServiceBase
         _fakeRepository = fakeRepository;
     }
 
-    public override Task<HealthResponse> Health(HealthRequest request, ServerCallContext context)
+    public override async Task<HealthResponse> Health(HealthRequest request, ServerCallContext context)
     {
-        return Task.FromResult(new HealthResponse());
+        await Task.Yield();
+        return new();
     }
 
     public override async Task<RetrieveResponse> Retrieve(RetrieveRequest request, ServerCallContext context)
@@ -28,13 +27,14 @@ public class BenchmarkGrpcService : BenchmarkService.BenchmarkServiceBase
 
         var response = new RetrieveResponse();
 
-        response.Products.AddRange(products.Select(product => (GRPCvsREST.Benchmark.Product) product));
+        response.Products.AddRange(products.Select(product => (Product)product));
 
         return response;
     }
 
-    public override Task<SubmitResponse> Submit(SubmitRequest request, ServerCallContext context)
+    public override async Task<SubmitResponse> Submit(SubmitRequest request, ServerCallContext context)
     {
-        return Task.FromResult(new SubmitResponse());
+        await Task.Yield();
+        return new();
     }
 }

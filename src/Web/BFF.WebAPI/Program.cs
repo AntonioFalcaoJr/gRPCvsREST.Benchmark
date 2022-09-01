@@ -1,9 +1,6 @@
-using System.IO.Compression;
 using BFF.WebAPI;
 using BFF.WebAPI.HttpClients;
 using Grpc.Core;
-using Grpc.Net.Client;
-using Grpc.Net.Client.Balancer;
 using Grpc.Net.Client.Configuration;
 using GRPCvsREST.Benchmark;
 using Microsoft.AspNetCore.HttpLogging;
@@ -11,16 +8,15 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureLogging((context, loggingBuilder) =>
-{
-    Log.Logger = new LoggerConfiguration().ReadFrom
-        .Configuration(context.Configuration)
-        .CreateLogger();
+Log.Logger = new LoggerConfiguration().ReadFrom
+    .Configuration(builder.Configuration)
+    .CreateLogger();
 
-    loggingBuilder.ClearProviders();
-    loggingBuilder.AddSerilog();
-    builder.Host.UseSerilog();
-});
+builder.Logging
+    .ClearProviders()
+    .AddSerilog();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddHttpLogging(options
     => options.LoggingFields = HttpLoggingFields.All);
@@ -29,53 +25,6 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options => options.CustomSchemaIds(type => type.FullName));
 
-// SETUP - 120K
-// builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options 
-//     => options.Address = new(builder.Configuration["Benchmark:GrpcClient"]!));
-
-//AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
-// SETUP - 273k request/min (1BFF = 1Server)
-// builder.Services.AddSingleton(GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
-//     new GrpcChannelOptions {HttpHandler = new SocketsHttpHandler {EnableMultipleHttp2Connections = true}}));
-// builder.Services.AddTransient(p => new BenchmarkService.BenchmarkServiceClient(p.GetRequiredService<GrpcChannel>()));
-
-// SETUP - 200k request/min (1BFF = 1Server)
-// builder.Services
-//     .AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(c => c.Address = new Uri(builder.Configuration["Benchmark:GrpcClient"]!))
-//     .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { EnableMultipleHttp2Connections = true });
-
-// SETUP - 310k request/min (1BFF = 1Server)
-
-// builder.Services.AddSingleton<ResolverFactory>(_
-//     => new DnsResolverFactory(TimeSpan.FromSeconds(30)));
-//
-// builder.Services.AddSingleton(provider
-//     => GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
-//         new()
-//         {
-//             Credentials = ChannelCredentials.Insecure,
-//             HttpHandler = new SocketsHttpHandler
-//             {
-//                 EnableMultipleHttp2Connections = true,
-//                 PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
-//                 PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
-//                 KeepAlivePingDelay = TimeSpan.FromSeconds(60),
-//                 KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
-//             },
-//             ServiceConfig = new() { LoadBalancingConfigs = { new RoundRobinConfig() } },
-//             ServiceProvider = provider
-//         }));
-//
-// builder.Services.AddScoped(provider
-//     => new BenchmarkService.BenchmarkServiceClient(provider.GetRequiredService<GrpcChannel>()));
-
-// SETUP - 298k request/min (1BFF = 1Server)
-//builder.Services.AddGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>();
-
-//builder.Services.AddSingleton<ResolverFactory>(provider => new DnsResolverFactory(TimeSpan.FromSeconds(30)));
-
-// SETUP
 builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options
         => options.Address = new(builder.Configuration["Benchmark:GrpcClient"]!))
     .ConfigureChannel((provider, options) =>
@@ -84,17 +33,15 @@ builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options
             options.ServiceConfig = new() { LoadBalancingConfigs = { new RoundRobinConfig() } };
             options.ServiceProvider = provider;
         }
-    )
-    .ConfigurePrimaryHttpMessageHandler(()
-        => new SocketsHttpHandler
+    ).ConfigurePrimaryHttpMessageHandler(() =>
+        new SocketsHttpHandler
         {
             EnableMultipleHttp2Connections = true,
             PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
             PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
             KeepAlivePingDelay = TimeSpan.FromSeconds(60),
             KeepAlivePingTimeout = TimeSpan.FromSeconds(30)
-        })
-    .EnableCallContextPropagation(options
+        }).EnableCallContextPropagation(options
         => options.SuppressContextNotFoundErrors = true);
 
 builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client =>
@@ -132,8 +79,6 @@ app.MapPost("/rest", ([AsParameters] Requests.RestSubmitRequest request)
 
 try
 {
-    //app.UseGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>(builder.Configuration["Benchmark:GrpcClient"]!);
-
     await app.RunAsync();
     Log.Information("Stopped cleanly");
 }
