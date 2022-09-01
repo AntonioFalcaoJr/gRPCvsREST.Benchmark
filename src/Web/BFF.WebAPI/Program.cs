@@ -46,68 +46,56 @@ builder.Services
 //     .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { EnableMultipleHttp2Connections = true });
 
 // SETUP - 310k request/min (1BFF = 1Server)
-builder.Services.AddSingleton<ResolverFactory>(_ 
-    => new DnsResolverFactory(TimeSpan.FromSeconds(30)));
 
-builder.Services.AddSingleton(provider 
-    => GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
-    new ()
-    {
-        Credentials = ChannelCredentials.Insecure,
-        HttpHandler = new SocketsHttpHandler
-        {
-            EnableMultipleHttp2Connections = true,
-            PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
-            PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
-            KeepAlivePingDelay = TimeSpan.FromSeconds(60),
-            KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
-        },
-        ServiceConfig = new() { LoadBalancingConfigs = { new RoundRobinConfig() } },
-        ServiceProvider = provider
-    }));
-
-builder.Services.AddScoped(provider 
-    => new BenchmarkService.BenchmarkServiceClient(provider.GetRequiredService<GrpcChannel>()));
+// builder.Services.AddSingleton<ResolverFactory>(_
+//     => new DnsResolverFactory(TimeSpan.FromSeconds(30)));
+//
+// builder.Services.AddSingleton(provider
+//     => GrpcChannel.ForAddress(builder.Configuration["Benchmark:GrpcClient"]!,
+//         new()
+//         {
+//             Credentials = ChannelCredentials.Insecure,
+//             HttpHandler = new SocketsHttpHandler
+//             {
+//                 EnableMultipleHttp2Connections = true,
+//                 PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
+//                 PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
+//                 KeepAlivePingDelay = TimeSpan.FromSeconds(60),
+//                 KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
+//             },
+//             ServiceConfig = new() { LoadBalancingConfigs = { new RoundRobinConfig() } },
+//             ServiceProvider = provider
+//         }));
+//
+// builder.Services.AddScoped(provider
+//     => new BenchmarkService.BenchmarkServiceClient(provider.GetRequiredService<GrpcChannel>()));
 
 // SETUP - 298k request/min (1BFF = 1Server)
 //builder.Services.AddGrpcClientMultiplexed<BenchmarkService.BenchmarkServiceClient>();
 
 //builder.Services.AddSingleton<ResolverFactory>(provider => new DnsResolverFactory(TimeSpan.FromSeconds(30)));
 
-// // SETUP
-// builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options =>
-//     {
-//         options.Address = new(builder.Configuration["Benchmark:GrpcClient"]!);
-//     })
-//     .ConfigureChannel(options =>
-//         {
-//             options.Credentials = ChannelCredentials.Insecure;
-//
-//             options.ServiceConfig = new()
-//             {
-//                 LoadBalancingConfigs =
-//                 {
-//                     new RoundRobinConfig()
-//                 }
-//             };
-//         }
-//     )
-//     .ConfigurePrimaryHttpMessageHandler(() =>
-//     {
-//         return new SocketsHttpHandler
-//         {
-//             EnableMultipleHttp2Connections = true,
-//
-//             PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
-//             PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
-//
-//             KeepAlivePingDelay = TimeSpan.FromSeconds(30),
-//             KeepAlivePingTimeout = TimeSpan.FromSeconds(10)
-//         };
-//     })
-//     .EnableCallContextPropagation(options
-//         => options.SuppressContextNotFoundErrors = true);
-
+// SETUP
+builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options
+        => options.Address = new(builder.Configuration["Benchmark:GrpcClient"]!))
+    .ConfigureChannel((provider, options) =>
+        {
+            options.Credentials = ChannelCredentials.Insecure;
+            options.ServiceConfig = new() { LoadBalancingConfigs = { new RoundRobinConfig() } };
+            options.ServiceProvider = provider;
+        }
+    )
+    .ConfigurePrimaryHttpMessageHandler(()
+        => new SocketsHttpHandler
+        {
+            EnableMultipleHttp2Connections = true,
+            PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
+            PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
+            KeepAlivePingDelay = TimeSpan.FromSeconds(60),
+            KeepAlivePingTimeout = TimeSpan.FromSeconds(30)
+        })
+    .EnableCallContextPropagation(options
+        => options.SuppressContextNotFoundErrors = true);
 
 builder.Services.AddHttpClient<IRestHttpClient, RestHttpClient>(client =>
         client.BaseAddress = new(builder.Configuration["Benchmark:RestClient"]!))
