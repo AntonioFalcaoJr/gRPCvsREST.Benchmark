@@ -16,17 +16,17 @@ COPY ./Directory.Build.props ./
 
 WORKDIR /src
 
-COPY ./src/Services/gRPC.WebApi/*.csproj ./Services/gRPC.WebApi/
+COPY ./src/Services/RestService/*.csproj ./Services/RestService/
 COPY ./src/Services/Data/*.csproj ./Services/Data/
 COPY ./src/Contracts/*.csproj ./Contracts/
 
-RUN dotnet restore -v m ./Services/gRPC.WebApi/
+RUN dotnet restore -v m ./Services/RestService/
 
-COPY ./src/Services/gRPC.WebApi/. ./Services/gRPC.WebApi/
+COPY ./src/Services/RestService/. ./Services/RestService/
 COPY ./src/Services/Data/. ./Services/Data/
 COPY ./src/Contracts/. ./Contracts/
 
-WORKDIR /src/Services/gRPC.WebApi
+WORKDIR /src/Services/RestService
 
 RUN dotnet build -c Release --no-restore -v m -o /app/build 
 
@@ -38,4 +38,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=publish /root/.dotnet/corefx/cryptography/x509stores/my/* /root/.dotnet/corefx/cryptography/x509stores/my/
-ENTRYPOINT ["dotnet", "gRPC.WebApi.dll"]
+ENTRYPOINT ["dotnet", "RestService.dll"]

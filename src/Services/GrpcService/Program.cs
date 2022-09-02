@@ -1,20 +1,20 @@
+using System.IO.Compression;
 using Data.Repositories;
+using gRPC.WebApi.gRPC;
 using Microsoft.AspNetCore.HttpLogging;
-using REST.WebApi;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.ConfigureLogging((context, loggingBuilder) =>
-{
-    Log.Logger = new LoggerConfiguration().ReadFrom
-        .Configuration(context.Configuration)
-        .CreateLogger();
+Log.Logger = new LoggerConfiguration().ReadFrom
+    .Configuration(builder.Configuration)
+    .CreateLogger();
 
-    loggingBuilder.ClearProviders();
-    loggingBuilder.AddSerilog();
-    builder.Host.UseSerilog();
-});
+builder.Logging
+    .ClearProviders()
+    .AddSerilog();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddHttpLogging(options
     => options.LoggingFields = HttpLoggingFields.All);
@@ -22,6 +22,9 @@ builder.Services.AddHttpLogging(options
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen();
+
+builder.Services.AddGrpc(options
+    => options.ResponseCompressionLevel = CompressionLevel.Fastest);
 
 builder.Services.AddSingleton<IFakeRepository, FakeRepository>();
 
@@ -36,10 +39,9 @@ if (builder.Environment.IsDevelopment() || builder.Environment.IsStaging())
     app.UseSwaggerUI(options => options.EnableTryItOutByDefault());
 }
 
-app.MapGet("/health", () => Results.Ok());
-
-app.MapGet("/retrieve", ([AsParameters] Requests.TakeProductsRequest request) 
-    => Results.Ok(request.Repository.TakeProducts(request.Amount)));
+app.UseRouting();
+app.UseEndpoints(endpoint
+    => endpoint.MapGrpcService<BenchmarkGrpcService>());
 
 try
 {

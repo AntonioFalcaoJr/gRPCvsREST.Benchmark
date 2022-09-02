@@ -16,19 +16,16 @@ COPY ./Directory.Build.props ./
 
 WORKDIR /src
 
-COPY ./src/Services/REST.WebApi/*.csproj ./Services/REST.WebApi/
-COPY ./src/Services/Data/*.csproj ./Services/Data/
+COPY ./src/Web/WebAPI/*.csproj ./Web/WebAPI/
 COPY ./src/Contracts/*.csproj ./Contracts/
 
-RUN dotnet restore -v m ./Services/REST.WebApi/
+RUN dotnet restore -v m ./Web/WebAPI
 
-COPY ./src/Services/REST.WebApi/. ./Services/REST.WebApi/
-COPY ./src/Services/Data/. ./Services/Data/
+COPY ./src/Web/WebAPI/. ./Web/WebAPI/
 COPY ./src/Contracts/. ./Contracts/
 
-WORKDIR /src/Services/REST.WebApi
-
-RUN dotnet build -c Release --no-restore -v m -o /app/build 
+WORKDIR /src/Web/WebAPI
+RUN dotnet build -c Release --no-restore -v m -o /app/build
 
 FROM build AS publish
 RUN dotnet dev-certs https --trust
@@ -38,4 +35,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=publish /root/.dotnet/corefx/cryptography/x509stores/my/* /root/.dotnet/corefx/cryptography/x509stores/my/
-ENTRYPOINT ["dotnet", "REST.WebApi.dll"]
+ENTRYPOINT ["dotnet", "WebAPI.dll"]

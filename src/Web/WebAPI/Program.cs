@@ -27,20 +27,19 @@ builder.Services
 
 builder.Services.AddGrpcClient<BenchmarkService.BenchmarkServiceClient>(options
         => options.Address = new(builder.Configuration["Benchmark:GrpcClient"]!))
-    .ConfigureChannel((provider, options) =>
+    .ConfigureChannel(options =>
         {
             options.Credentials = ChannelCredentials.Insecure;
             options.ServiceConfig = new() { LoadBalancingConfigs = { new RoundRobinConfig() } };
-            options.ServiceProvider = provider;
         }
     ).ConfigurePrimaryHttpMessageHandler(() =>
         new SocketsHttpHandler
         {
-            EnableMultipleHttp2Connections = true,
-            PooledConnectionLifetime = Timeout.InfiniteTimeSpan,
             PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
             KeepAlivePingDelay = TimeSpan.FromSeconds(60),
-            KeepAlivePingTimeout = TimeSpan.FromSeconds(30)
+            KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
+            EnableMultipleHttp2Connections = true
+            
         }).EnableCallContextPropagation(options
         => options.SuppressContextNotFoundErrors = true);
 
