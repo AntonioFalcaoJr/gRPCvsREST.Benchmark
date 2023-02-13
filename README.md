@@ -1,6 +1,6 @@
 # gRPC vs REST Benchmark
 
-This Benchmark aims to measure the efficiency of communication between services through REST versus gRPC. The specific scenario is a BFF that consumes data in a given service.
+This Benchmark measures communication efficiency between services through REST versus gRPC unary calls. The specific scenario is a BFF that consumes data in a given service.
 
 ## Scenario
 
