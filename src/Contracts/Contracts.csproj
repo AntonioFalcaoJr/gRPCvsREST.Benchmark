@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <PackageReference Include="Google.Protobuf" Version="3.21.5"/>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.49.0-pre1"/>
+        <PackageReference Include="Google.Protobuf" Version="3.24.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.56.0-pre1" />
     </ItemGroup>
     <ItemGroup>
         <Protobuf Include="Protos\Benchmark.proto" GrpcServices="Both"/>
